@@ -1,10 +1,15 @@
-name: email-triage-env
+name: agentic-support-env
 version: 1.0
-description: Real-world email triage environment for OpenEnv
+description: Real-world agentic support workflow environment
 tasks:
-  - urgent_billing
-  - scheduling
-  - technical_support
-action_model: Action
-observation_model: Observation
-reward_model: Reward
+  - refund_issue
+  - technical_issue
+  - enterprise_outage
+models:
+  observation: Observation
+  action: Action
+  reward: Reward
+api:
+  reset: /reset
+  state: /state
+  step: /step

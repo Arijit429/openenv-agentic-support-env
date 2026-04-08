@@ -48,7 +48,7 @@ class SupportAgentEnv:
                 ]
             },
             3: {
-                "task_name": "priority_enterprise",
+                "task_name": "enterprise_outage",
                 "ticket_text": "Enterprise client system outage impacting 500 users.",
                 "expected_flow": [
                     "analyze_ticket",
@@ -74,9 +74,15 @@ class SupportAgentEnv:
         score = 0.0
         done = False
 
+        # Dynamic grading logic
         if action.action_type == expected_action:
             score += 0.6
+            message = "Correct workflow action"
+        else:
+            score += 0.1
+            message = "Incorrect workflow action"
 
+        # Partial progress reward
         score += min(0.1 * self.steps, 0.4)
 
         if self.steps >= 3:
@@ -96,7 +102,7 @@ class SupportAgentEnv:
             ),
             Reward(
                 score=score,
-                message="Workflow step evaluated"
+                message=message
             ),
             done,
             {
