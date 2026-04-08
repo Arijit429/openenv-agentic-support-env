@@ -2,7 +2,6 @@ import os
 from openai import OpenAI
 from email_env import SupportAgentEnv, Action
 
-# Safe fallbacks for normal HF Space startup
 API_BASE_URL = os.environ.get("API_BASE_URL", "https://router.huggingface.co/v1")
 API_KEY = os.environ.get("API_KEY", "dummy_key")
 MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o-mini")
@@ -14,10 +13,6 @@ client = OpenAI(
 
 
 def llm_decide_action(ticket_text: str, step_num: int):
-    """
-    Makes a real proxy LLM call when API_BASE_URL/API_KEY are injected.
-    Falls back safely if unavailable.
-    """
     try:
         response = client.chat.completions.create(
             model=MODEL_NAME,
@@ -37,7 +32,6 @@ def llm_decide_action(ticket_text: str, step_num: int):
         text = response.choices[0].message.content.lower()
 
     except Exception:
-        # Safe fallback so Space never crashes
         text = ""
 
     if "refund" in text:
