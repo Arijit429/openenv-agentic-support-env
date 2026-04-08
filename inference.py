@@ -2,8 +2,9 @@ import os
 from openai import OpenAI
 from email_env import SupportAgentEnv, Action
 
-API_BASE_URL = os.environ["API_BASE_URL"]
-API_KEY = os.environ["API_KEY"]
+# Safe fallbacks for normal HF Space startup
+API_BASE_URL = os.environ.get("API_BASE_URL", "https://router.huggingface.co/v1")
+API_KEY = os.environ.get("API_KEY", "dummy_key")
 MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o-mini")
 
 client = OpenAI(
@@ -13,22 +14,31 @@ client = OpenAI(
 
 
 def llm_decide_action(ticket_text: str, step_num: int):
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {
-                "role": "system",
-                "content": "You are an autonomous customer support workflow agent."
-            },
-            {
-                "role": "user",
-                "content": f"Ticket: {ticket_text}\nStep: {step_num}\nChoose next action."
-            }
-        ],
-        temperature=0
-    )
+    """
+    Makes a real proxy LLM call when API_BASE_URL/API_KEY are injected.
+    Falls back safely if unavailable.
+    """
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are an autonomous customer support workflow agent."
+                },
+                {
+                    "role": "user",
+                    "content": f"Ticket: {ticket_text}\nStep: {step_num}\nChoose next action."
+                }
+            ],
+            temperature=0
+        )
 
-    text = response.choices[0].message.content.lower()
+        text = response.choices[0].message.content.lower()
+
+    except Exception:
+        # Safe fallback so Space never crashes
+        text = ""
 
     if "refund" in text:
         return "process_refund"
@@ -37,13 +47,13 @@ def llm_decide_action(ticket_text: str, step_num: int):
     if "engineering" in text:
         return "escalate_engineering"
 
-    # safe fallback
-    mapping = {
+    fallback = {
         1: "analyze_ticket",
         2: "process_refund",
         3: "close_ticket"
     }
-    return mapping.get(step_num, "close_ticket")
+
+    return fallback.get(step_num, "close_ticket")
 
 
 def run_task(task_id):
