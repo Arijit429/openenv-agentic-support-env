@@ -1,0 +1,16 @@
+[project]
+name = "openenv-agentic-support-env"
+version = "1.0.0"
+description = "Agentic AI workflow environment for OpenEnv hackathon"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "flask",
+    "pydantic",
+    "openai"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
