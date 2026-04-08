@@ -1,32 +1,36 @@
-# Email Triage OpenEnv
+---
+title: OpenEnv Agentic Support Environment
+emoji: 🤖
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_file: inference.py
+pinned: false
+---
 
-A real-world AI environment simulating email triage and support escalation workflows.
+# OpenEnv Agentic Support Environment
+
+A real-world **agentic AI workflow environment** for autonomous support ticket resolution.
 
 ## Motivation
-Email triage is a common enterprise workflow task performed by support teams, IT operations, and customer service agents.
-
-This environment simulates:
-- classification
-- prioritization
+This environment is designed for training and benchmarking AI agents on realistic enterprise workflows such as:
+- ticket analysis
 - escalation
+- refund processing
+- incident management
 
 ## Tasks
 ### Easy
-Urgent billing issue
+Refund issue
 
 ### Medium
-Meeting scheduling request
+Technical issue escalation
 
 ### Hard
-Multi-intent technical complaint
+Enterprise outage response
 
 ## Reward
-Score range: 0.0 to 1.0
-
-- category = 0.3
-- priority = 0.3
-- escalation = 0.2
-- multi-step completion = 0.2
+Reward range: 0.0 to 1.0
 
 ## Run
 ```bash
@@ -35,6 +39,6 @@ python3 inference.py
 
 ## Docker
 ```bash
-docker build -t email-env .
-docker run email-env
+docker build -t agent-env .
+docker run agent-env
 ```
