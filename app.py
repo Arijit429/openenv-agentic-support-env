@@ -1,23 +1,55 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from inference import run_task
-from email_env import Action
+from email_env import Action, SupportAgentEnv
 
 app = Flask(__name__)
 
-@app.route("/")
+env = SupportAgentEnv()
+
+
+@app.route("/", methods=["GET"])
 def home():
-    return {
+    return jsonify({
         "status": "running",
         "message": "OpenEnv Agentic Support Environment is live"
-    }
+    })
 
-@app.route("/reset")
+
+@app.route("/reset", methods=["POST", "GET"])
 def reset():
-    return {
-        "status": "reset_ok"
-    }
+    obs = env.reset(task_id=1)
 
-@app.route("/run")
+    return jsonify({
+        "status": "reset_ok",
+        "observation": obs.model_dump()
+    })
+
+
+@app.route("/state", methods=["GET"])
+def state():
+    return jsonify(env.state())
+
+
+@app.route("/step", methods=["POST"])
+def step():
+    data = request.get_json()
+
+    action = Action(
+        action_type=data.get("action_type", ""),
+        resolution_note=data.get("resolution_note", "")
+    )
+
+    obs, reward, done, info = env.step(action)
+
+    return jsonify({
+        "observation": obs.model_dump(),
+        "reward": reward.model_dump(),
+        "done": done,
+        "info": info
+    })
+
+
+@app.route("/run", methods=["GET"])
 def run():
     run_task(
         1,
@@ -27,7 +59,9 @@ def run():
             Action(action_type="close_ticket", resolution_note="")
         ]
     )
-    return {"status": "task_executed"}
+
+    return jsonify({"status": "task_executed"})
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=7860)
