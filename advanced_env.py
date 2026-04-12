@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List
 
 
 class Meeting(BaseModel):
@@ -121,6 +121,8 @@ class CalendarOrchestrationEnv:
         if urgency_handled:
             score += 0.15
 
+        safe_score = max(0.01, min(round(score, 2), 0.99))
+
         done = self.steps >= 3
 
         return (
@@ -131,7 +133,7 @@ class CalendarOrchestrationEnv:
                 step_count=self.steps
             ),
             Reward(
-                score=max(0.01, min(score, 0.99)),
+                score=safe_score,
                 message="Advanced benchmark step evaluated"
             ),
             done,
