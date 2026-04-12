@@ -131,7 +131,7 @@ class CalendarOrchestrationEnv:
                 step_count=self.steps
             ),
             Reward(
-                score=min(score, 1.0),
+                score=max(0.01, min(score, 0.99)),
                 message="Advanced benchmark step evaluated"
             ),
             done,

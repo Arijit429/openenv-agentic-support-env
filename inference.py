@@ -42,13 +42,13 @@ def llm_plan_action(calendar_state, step_num):
     )
 
 
-def run_inference():
+def run_single_task(task_id):
     _, MODEL_NAME = get_client()
 
     env = CalendarOrchestrationEnv()
-    obs = env.reset()
+    obs = env.reset(task_id=task_id)
 
-    print(f"[START] task=calendar_task env=openenv model={MODEL_NAME}")
+    print(f"[START] task=calendar_task_{task_id} env=openenv model={MODEL_NAME}")
 
     rewards = []
     success = False
@@ -74,10 +74,11 @@ def run_inference():
                 break
 
     except Exception as e:
+        rewards.append("0.01")
         print(
             f"[STEP] step={step_num} "
             f"action=error "
-            f"reward=0.00 "
+            f"reward=0.01 "
             f"done=true "
             f"error={str(e)}"
         )
@@ -88,6 +89,10 @@ def run_inference():
         f"rewards={','.join(rewards)}"
     )
 
+
+def run_inference():
+    for task_id in [1, 2, 3]:
+        run_single_task(task_id)
 
 if __name__ == "__main__":
     run_inference()
