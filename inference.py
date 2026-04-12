@@ -90,3 +90,12 @@ def run_single_task(task_id):
         f"steps={step_num} "
         f"rewards={','.join(rewards)}"
     )
+
+
+def run_inference():
+    for task_id in [1, 2, 3]:
+        run_single_task(task_id)
+
+
+if __name__ == "__main__":
+    run_inference()
