@@ -1,23 +1,23 @@
 from flask import Flask, request, jsonify
-from inference import run_task
-from email_env import Action, SupportAgentEnv
+from advanced_env import CalendarOrchestrationEnv, Action
+from inference import run_inference
 
 app = Flask(__name__)
 
-env = SupportAgentEnv()
+env = CalendarOrchestrationEnv()
 
 
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({
         "status": "running",
-        "message": "OpenEnv Agentic Support Environment is live"
+        "message": "Advanced Calendar Orchestration Environment is live"
     })
 
 
 @app.route("/reset", methods=["POST", "GET"])
 def reset():
-    obs = env.reset(task_id=1)
+    obs = env.reset()
 
     return jsonify({
         "status": "reset_ok",
@@ -36,7 +36,9 @@ def step():
 
     action = Action(
         action_type=data.get("action_type", ""),
-        resolution_note=data.get("resolution_note", "")
+        target_meeting_id=data.get("target_meeting_id", ""),
+        new_time=data.get("new_time", ""),
+        reason=data.get("reason", "")
     )
 
     obs, reward, done, info = env.step(action)
@@ -51,15 +53,7 @@ def step():
 
 @app.route("/run", methods=["GET"])
 def run():
-    run_task(
-        1,
-        [
-            Action(action_type="analyze_ticket", resolution_note=""),
-            Action(action_type="process_refund", resolution_note=""),
-            Action(action_type="close_ticket", resolution_note="")
-        ]
-    )
-
+    run_inference()
     return jsonify({"status": "task_executed"})
 
 
