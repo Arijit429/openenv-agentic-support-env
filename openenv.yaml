@@ -1,14 +1,17 @@
-name: agentic-support-env
-version: 1.0
-description: Real-world agentic support workflow environment
+name: advanced-calendar-orchestration-env
+version: 2.0
+description: Multi-task enterprise calendar orchestration benchmark environment
+
 tasks:
-  - refund_issue
-  - technical_issue
-  - enterprise_outage
+  - calendar_task_1
+  - calendar_task_2
+  - calendar_task_3
+
 models:
   observation: Observation
   action: Action
   reward: Reward
+
 api:
   reset: /reset
   state: /state
